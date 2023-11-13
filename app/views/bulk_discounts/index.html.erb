@@ -1,5 +1,5 @@
 <h1>Welcome <%= @merchant.name %></h1>
-<h3>These are your discounts</h3>
+<%= render partial: "shared/nav" %>
 
 <%= link_to "Create a Discount", "/merchants/#{@merchant.id}/bulk_discounts/new" %> <br>
 
