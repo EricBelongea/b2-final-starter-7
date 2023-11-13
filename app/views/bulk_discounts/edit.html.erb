@@ -1,0 +1,11 @@
+<h3>You are editing <%= @discount.name %> discount </h3>
+
+<%= form_with url: "/merchants/#{@merchant.id}/bulk_discounts/#{@discount.id}", method: :patch, local: true, data: { turbo: false } do |f|  %>
+  <%= f.label :name, "Name: " %>
+  <%= f.text_field :name, value: @discount.name %>
+  <%= f.label :quantity, "Quantity Threshold: " %>
+  <%= f.number_field :quantity, in: 1..Float::INFINITY, value: @discount.quantity %>
+  <%= f.label :percentage, "Percentage: " %>
+  <%= f.number_field :percentage, in: 1..100, value: @discount.percentage  %>
+  <%= f.submit "Edit" %>
+<% end %>
