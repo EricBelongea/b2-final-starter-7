@@ -82,7 +82,8 @@ RSpec.describe "Bulk Discounts Show" do
 
   describe '#US4' do
     it 'Can edit Discounts' do
-      visit "/merchants/#{@merchant1.id}/bulk_discounts"
+      # visit "/merchants/#{@merchant1.id}/bulk_discounts"
+      visit merchant_bulk_discounts_path(@merchant1.id)
 
       expect(page).to have_content("Welcome #{@merchant1.name}")
       expect(page).to have_link("Create a Discount")
@@ -93,9 +94,10 @@ RSpec.describe "Bulk Discounts Show" do
       expect(page).to have_content("Percentage Off: #{@discount1.percentage}")
 
       click_link("#{@discount1.name}")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/#{@discount1.id}")
+      expect(current_path).to eq(merchant_bulk_discount_path(@merchant1.id, @discount1.id))
       
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/#{@discount1.id}"
+
+      visit merchant_bulk_discount_path(@merchant1.id, @discount1.id)
 
       expect(page).to_not have_content("#{@merchant1.name}")
       expect(page).to have_content("#{@discount1.name}")
@@ -107,7 +109,7 @@ RSpec.describe "Bulk Discounts Show" do
 
   describe '#US5' do
     it 'Can edit on Discount show page' do
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/#{@discount1.id}"
+      visit merchant_bulk_discount_path(@merchant1.id, @discount1.id)
 
       expect(page).to have_content("#{@discount1.name}")
       expect(page).to have_content("Quantity Threshold: #{@discount1.quantity}")
@@ -116,9 +118,9 @@ RSpec.describe "Bulk Discounts Show" do
       expect(page).to have_link("Edit #{@discount1.name}")
 
       click_link("Edit #{@discount1.name}")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/#{@discount1.id}/edit")
+      expect(current_path).to eq(edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id))
 
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/#{@discount1.id}/edit"
+      visit edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id)
 
       expect(page).to have_content("Name: ")
       expect(page).to have_field("Name", with: @discount1.name)
@@ -127,10 +129,19 @@ RSpec.describe "Bulk Discounts Show" do
       expect(page).to have_content("Percentage:")
       expect(page).to have_field("Percentage", with: @discount1.percentage)
       expect(page).to have_button("Edit")
+
+      fill_in(:percentage, with: 50)
+      click_button("Edit")
+      expect(current_path).to eq(merchant_bulk_discount_path(@merchant1.id, @discount1.id))
+
+      visit merchant_bulk_discount_path(@merchant1.id, @discount1.id)
+
+      expect(page).to have_content("Quantity Threshold: #{@discount1.quantity}")
+      expect(page).to have_content("Percentage: 50")
     end
 
     it "Form Edgecase Testing - Name" do
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/new"
+      visit new_merchant_bulk_discount_path(@merchant1.id)
 
       fill_in(:discount_name, with: "")
       fill_in(:discount_quantity, with: 10)
@@ -139,11 +150,22 @@ RSpec.describe "Bulk Discounts Show" do
       click_button("Submit")
 
       expect(page).to have_content("Please make sure you fill in all the fields correctly")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/new")
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1.id))
+
+      visit edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id)
+
+      fill_in(:name, with: "")
+      fill_in(:quantity, with: 10)
+      fill_in(:ercentage, with: 100)
+
+      click_button("Edit")
+
+      expect(page).to have_content("Please make sure you fill in all the fields correctly")
+      expect(current_path).to eq(edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id))
     end
 
     it "Form Edgecase Testing - Quantity" do
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/new"
+      visit new_merchant_bulk_discount_path(@merchant1.id)
 
       fill_in(:discount_name, with: "test")
       fill_in(:discount_quantity, with: 0)
@@ -152,9 +174,9 @@ RSpec.describe "Bulk Discounts Show" do
       click_button("Submit")
 
       expect(page).to have_content("Please make sure you fill in all the fields correctly")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/new")
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1.id))
 
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/new"
+      visit new_merchant_bulk_discount_path(@merchant1.id)
 
       fill_in(:discount_name, with: "test")
       fill_in(:discount_quantity, with: "")
@@ -163,11 +185,22 @@ RSpec.describe "Bulk Discounts Show" do
       click_button("Submit")
 
       expect(page).to have_content("Please make sure you fill in all the fields correctly")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/new")
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1.id))
+
+      visit edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id)
+
+      fill_in(:name, with: "YeeHaw")
+      fill_in(:quantity, with: 0)
+      fill_in(:ercentage, with: 100)
+
+      click_button("Edit")
+
+      expect(page).to have_content("Please make sure you fill in all the fields correctly")
+      expect(current_path).to eq(edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id))
     end
 
     it "Form Edgecase Testing - Percentage" do
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/new"
+      visit new_merchant_bulk_discount_path(@merchant1.id)
 
       fill_in(:discount_name, with: "test")
       fill_in(:discount_quantity, with: 50)
@@ -176,9 +209,9 @@ RSpec.describe "Bulk Discounts Show" do
       click_button("Submit")
 
       expect(page).to have_content("Please make sure you fill in all the fields correctly")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/new")
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1.id))
 
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/new"
+      visit new_merchant_bulk_discount_path(@merchant1.id)
 
       fill_in(:discount_name, with: "test")
       fill_in(:discount_quantity, with: 50)
@@ -187,9 +220,9 @@ RSpec.describe "Bulk Discounts Show" do
       click_button("Submit")
 
       expect(page).to have_content("Please make sure you fill in all the fields correctly")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/new")
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1.id))
 
-      visit "/merchants/#{@merchant1.id}/bulk_discounts/new"
+      visit new_merchant_bulk_discount_path(@merchant1.id)
 
       fill_in(:discount_name, with: "test")
       fill_in(:discount_quantity, with: 0)
@@ -198,7 +231,29 @@ RSpec.describe "Bulk Discounts Show" do
       click_button("Submit")
 
       expect(page).to have_content("Please make sure you fill in all the fields correctly")
-      expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/new")
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1.id))
+
+      visit edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id)
+
+      fill_in(:name, with: "YeeHaw")
+      fill_in(:quantity, with: 10)
+      fill_in(:ercentage, with: 101)
+
+      click_button("Edit")
+
+      expect(page).to have_content("Please make sure you fill in all the fields correctly")
+      expect(current_path).to eq(edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id))
+
+      visit edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id)
+
+      fill_in(:name, with: "YeeHaw")
+      fill_in(:quantity, with: 10)
+      fill_in(:ercentage, with: 0)
+
+      click_button("Edit")
+
+      expect(page).to have_content("Please make sure you fill in all the fields correctly")
+      expect(current_path).to eq(edit_merchant_bulk_discount_path(@merchant1.id, @discount1.id))
     end
   end
 end
