@@ -14,6 +14,16 @@ class Invoice < ApplicationRecord
     invoice_items.sum("unit_price * quantity")
   end
 
+  def merchant_invoice_revenue(merchant_id)
+    Invoice.select("merchant_revenue")
+            .from(invoice_items
+            .joins(item: :merchant)
+            .select("SUM(invoice_items.quantity*invoice_items.unit_price) AS merchant_revenue")
+            .where("items.merchant_id = #{merchant_id}")
+            .group("invoice_items.id"))
+            .sum("merchant_revenue")
+  end
+
   def discounts_for_specific_invoice
     Invoice
     .select("quantity, unit_price, best_discount")
@@ -25,7 +35,7 @@ class Invoice < ApplicationRecord
       .sum("quantity*unit_price*discount/100.0")
   end
 
-  def discounted_revenue_for_specific_invoice
+  def discounted_revenue
     total_revenue - discounts_for_specific_invoice
   end
 end
