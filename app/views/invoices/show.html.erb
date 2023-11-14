@@ -53,6 +53,6 @@
       <p class="col-12"><%= @merchant.name %> Revenue</p>
     </div>
     <p>Merchant Invoice Revenue: <%= @invoice.merchant_invoice_revenue(@merchant.id) %></p>
-    <p>Revenue After Discounts: <%= @invoice.discounts_for_specific_invoice %></p>
+    <p>Revenue After Discounts: <%= @invoice.discounted_revenue %></p>
   </div>
 </body>

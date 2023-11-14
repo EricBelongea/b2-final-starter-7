@@ -106,12 +106,10 @@ RSpec.describe "invoices show" do
 
   it "I see a section for total revenue minus invoices" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
-    # require 'pry'; binding.pry
 
     within("div#merchant-info") do
       expect(page).to have_content("Merchant Invoice Revenue: #{@invoice_1.merchant_invoice_revenue(@merchant1.id)}")
       expect(page).to have_content("Revenue After Discounts: #{@invoice_1.discounts_for_specific_invoice}")
     end
   end
-
 end
