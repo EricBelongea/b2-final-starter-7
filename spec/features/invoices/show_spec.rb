@@ -51,6 +51,10 @@ RSpec.describe "invoices show" do
     @transaction6 = Transaction.create!(credit_card_number: 879799, result: 0, invoice_id: @invoice_6.id)
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
+
+    @merchant69 = Merchant.create!(name: "m1")
+    @discount1 = @merchant69.bulk_discounts.create(name: "Ten4Ten", quantity: 10, percentage: 10)
+  
   end
 
   it "shows the invoice information" do
@@ -102,7 +106,7 @@ RSpec.describe "invoices show" do
 
   it "I see a section for total revenue minus invoices" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
-
+    # require 'pry'; binding.pry
     expect(page).to have_content("Total Revenue: #{@invoice_1.total_revenue}")
     expect(page).to have_content("Revenue After Discounts:")
   end
