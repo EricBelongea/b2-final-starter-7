@@ -30,8 +30,8 @@ describe "Admin Invoices Index Page" do
   it "should display the customers name and shipping address" do
     expect(page).to have_content("#{@c1.first_name} #{@c1.last_name}")
     expect(page).to have_content(@c1.address)
-    expect(page).to have_content("#{@c1.city}, #{@c1.state} #{@c1.zip}")
-
+    expect(page).to have_content("#{@c1.city} #{@c1.state} #{@c1.zip}")
+    
     expect(page).to_not have_content("#{@c2.first_name} #{@c2.last_name}")
   end
 
@@ -68,5 +68,24 @@ describe "Admin Invoices Index Page" do
       expect(current_path).to eq(admin_invoice_path(@i1))
       expect(@i1.status).to eq("completed")
     end
+  end
+
+  it "Will show discounted revenue on Admin invoice show" do
+    merchant1 = Merchant.create!(name: "Merchant 1")
+    customer1 = Customer.create!(first_name: "Rick",last_name: "Sanchez" )
+    item1 = Item.create!(name: "Plumbus", description: "It's a thing", unit_price: 100, merchant_id: merchant1.id)
+    invoice1 = Invoice.create!(customer_id: customer1.id ,status: 2)
+    invoice_item1 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item1.id)
+    bulk_discount1 = BulkDiscount.create!(name: "discount10", quantity: 10, percentage: 10, merchant_id: merchant1.id)
+    item3 = Item.create!(name: "Fake Acid Pool Kit", description: "They'll never know!", unit_price: 100, merchant_id: merchant1.id)
+    invoice_item3 = InvoiceItem.create!(quantity: 20, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item3.id)
+    bulk_discount2 = BulkDiscount.create!(name: "discount20", quantity: 20, percentage: 20, merchant_id: merchant1.id)
+
+    visit admin_invoice_path(invoice1.id)
+
+    expect(page).to have_content("Total Revenue: $#{invoice1.merchant_invoice_revenue(merchant1.id)}0")
+    expect(page).to have_content("Total Revenue: $600.00")
+    expect(page).to have_content("Discounted Revenue: $#{invoice1.discounted_revenue}0")
+    expect(page).to have_content("Discounted Revenue: $500.00")
   end
 end
