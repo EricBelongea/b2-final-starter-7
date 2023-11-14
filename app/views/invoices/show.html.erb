@@ -46,7 +46,7 @@
             <% if @merchant.applicable_discount(i)  %>
             <td style="text-align:center">
               <% bulk_discount = @merchant.applicable_discount(i) %>
-              <%= link_to "Applied Discounts", "/merchants/#{@merchant.id}/bulk_discounts/#{bulk_discount.id}"  %>
+              <%= link_to "#{bulk_discount.name}", "/merchants/#{@merchant.id}/bulk_discounts/#{bulk_discount.id}"  %>
             </td>
             <% end %>
           </tr>
