@@ -32,7 +32,21 @@ RSpec.describe Invoice, type: :model do
     invoice1 = Invoice.create!(customer_id: customer1.id ,status: 2)
     invoice_item1 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item1.id)
     bulk_discount1 = BulkDiscount.create!(name: "discount10", quantity: 10, percentage: 10, merchant_id: merchant1.id)
-
-    expect(invoice1.discounted_revenue_for_specific_invoice).to eq(20)
+    
+    expect(invoice1.discounted_revenue_for_specific_invoice).to eq(180)
+    
+    # Adding a better discount to make sure that the right one is selected
+      # Same invoice, not the merchant's items
+    merchant2 = Merchant.create!(name: "Merchant 2")
+    item2 = Item.create!(name: "Meeseek", description: "It's a thing", unit_price: 100, merchant_id: merchant2.id)
+    invoice_item2 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item2.id)
+    expect(invoice1.discounted_revenue_for_specific_invoice).to eq(380)
+    
+    # Chooses the right discount check
+    item3 = Item.create!(name: "Fake Acid Pool Kit", description: "They'll never know!", unit_price: 100, merchant_id: merchant1.id)
+    invoice_item3 = InvoiceItem.create!(quantity: 20, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item3.id)
+    bulk_discount2 = BulkDiscount.create!(name: "discount20", quantity: 20, percentage: 20, merchant_id: merchant1.id)
+    
+    expect(invoice1.discounted_revenue_for_specific_invoice).to eq(700)
   end
 end

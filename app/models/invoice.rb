@@ -19,10 +19,10 @@ class Invoice < ApplicationRecord
     .select("quantity, unit_price, best_discount")
     .from(invoice_items
       .joins(:bulk_discounts)
-      .select("invoice_items.id, invoice_items.quantity, invoice_items.unit_price, MAX(bulk_discounts.percentage) as best_discount ")
-      .where("invoice_items.quantity >= bulk_discounts.item_threshold")
+      .select("invoice_items.id, invoice_items.quantity, invoice_items.unit_price, MAX(bulk_discounts.percentage) as discount")
+      .where("invoice_items.quantity >= bulk_discounts.quantity")
       .group("invoice_items.id"))
-      .sum("quantity*unit_price*best_discount/100.0")
+      .sum("quantity*unit_price*discount/100.0")
   end
 
   def discounted_revenue_for_specific_invoice
