@@ -169,4 +169,26 @@ describe Merchant do
       expect(@merchant2.disabled_items).to eq([@item_5, @item_6])
     end
   end
+
+  describe '#merchant discounts' do
+    it 'appliable_discount(ii)' do
+      merchant1 = Merchant.create!(name: "Merchant 1")
+      customer1 = Customer.create!(first_name: "Rick",last_name: "Sanchez" )
+      item1 = Item.create!(name: "Plumbus", description: "It's a thing", unit_price: 100, merchant_id: merchant1.id)
+      invoice1 = Invoice.create!(customer_id: customer1.id ,status: 2)
+      invoice_item1 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item1.id)
+      bulk_discount1 = BulkDiscount.create!(name: "discount10", quantity: 10, percentage: 10, merchant_id: merchant1.id)
+      # require 'pry'; binding.pry
+      expect(merchant1.applicable_discount(invoice_item1)).to eq(bulk_discount1)
+
+      merchant2 = Merchant.create!(name: "Merchant 2")
+      item2 = Item.create!(name: "Meeseek", description: "It's a thing", unit_price: 100, merchant_id: merchant2.id)
+      invoice_item2 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item2.id)
+      item3 = Item.create!(name: "Fake Acid Pool Kit", description: "They'll never know!", unit_price: 100, merchant_id: merchant1.id)
+      invoice_item3 = InvoiceItem.create!(quantity: 20, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item3.id)
+      bulk_discount2 = BulkDiscount.create!(name: "discount20", quantity: 20, percentage: 20, merchant_id: merchant1.id)
+
+      expect(merchant1.applicable_discount(invoice_item3)).to eq(bulk_discount2)
+    end
+  end
 end

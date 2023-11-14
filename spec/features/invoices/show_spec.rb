@@ -105,11 +105,52 @@ RSpec.describe "invoices show" do
   end
 
   it "I see a section for total revenue minus invoices" do
+    merchant1 = Merchant.create!(name: "Merchant 1")
+    customer1 = Customer.create!(first_name: "Rick",last_name: "Sanchez" )
+    item1 = Item.create!(name: "Plumbus", description: "It's a thing", unit_price: 100, merchant_id: merchant1.id)
+    invoice1 = Invoice.create!(customer_id: customer1.id ,status: 2)
+    invoice_item1 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item1.id)
+    bulk_discount1 = BulkDiscount.create!(name: "discount10", quantity: 10, percentage: 10, merchant_id: merchant1.id)
+
+    visit merchant_invoice_path(merchant1, invoice1)
+    within("div#merchant-info") do
+      expect(page).to have_content("Merchant Invoice Revenue: $#{invoice1.merchant_invoice_revenue(merchant1.id)}0")
+      expect(page).to have_content("Merchant Invoice Revenue: $200.00")
+      expect(page).to have_content("Revenue After Discounts: $#{invoice1.discounted_revenue}0")
+      expect(page).to have_content("Revenue After Discounts: $180.00")
+    end
+
+    merchant2 = Merchant.create!(name: "Merchant 2")
+    item2 = Item.create!(name: "Meeseek", description: "It's a thing", unit_price: 100, merchant_id: merchant2.id)
+    invoice_item2 = InvoiceItem.create!(quantity: 10, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item2.id)
+
+    visit merchant_invoice_path(merchant1, invoice1)
+    within("div#merchant-info") do
+      expect(page).to have_content("Merchant Invoice Revenue: $#{invoice1.merchant_invoice_revenue(merchant1.id)}0")
+      expect(page).to have_content("Merchant Invoice Revenue: $200.00")
+      expect(page).to have_content("Revenue After Discounts: $#{invoice1.discounted_revenue}0")
+      expect(page).to have_content("Revenue After Discounts: $380.00")
+    end
+
+    item3 = Item.create!(name: "Fake Acid Pool Kit", description: "They'll never know!", unit_price: 100, merchant_id: merchant1.id)
+    invoice_item3 = InvoiceItem.create!(quantity: 20, unit_price: 20, status: 2, invoice_id: invoice1.id, item_id: item3.id)
+    bulk_discount2 = BulkDiscount.create!(name: "discount20", quantity: 20, percentage: 20, merchant_id: merchant1.id)
+
+    # visit merchant_invoice_path(merchant1, invoice1)
+    # within("div#merchant-info") do
+    #   expect(page).to have_content("Merchant Invoice Revenue: $#{invoice1.merchant_invoice_revenue(merchant1.id)}0")
+    #   expect(page).to have_content("Merchant Invoice Revenue: $600.00")
+    #   expect(page).to have_content("Revenue After Discounts: $#{invoice1.discounted_revenue}0")
+    #   expect(page).to have_content("Revenue After Discounts: $700.00")
+    # end
+  end
+  
+  xit "has a link to the applied bulk discount" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
-    within("div#merchant-info") do
-      expect(page).to have_content("Merchant Invoice Revenue: #{@invoice_1.merchant_invoice_revenue(@merchant1.id)}")
-      expect(page).to have_content("Revenue After Discounts: #{@invoice_1.discounts_for_specific_invoice}")
-    end
+    expect(page).to have_link("Applied Discounts")
+    click_link("Applied Discount")
+
+    expect(current_path).to eq("/merchants/#{@merchant1.id}/bulk_discounts/#{@discount1.id}")
   end
 end

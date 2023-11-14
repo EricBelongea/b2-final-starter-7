@@ -62,4 +62,8 @@ class Merchant < ApplicationRecord
   def disabled_items
     items.where(status: 0)
   end
+
+  def applicable_discount(invoice_item)
+    bulk_discounts.where("#{invoice_item.quantity} >= bulk_discounts.quantity").order("percentage DESC").first
+  end
 end
