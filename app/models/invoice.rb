@@ -26,7 +26,7 @@ class Invoice < ApplicationRecord
 
   def discounts_for_specific_invoice
     Invoice
-    .select("quantity, unit_price, best_discount")
+    .select("quantity, unit_price")
     .from(invoice_items
       .joins(:bulk_discounts)
       .select("invoice_items.id, invoice_items.quantity, invoice_items.unit_price, MAX(bulk_discounts.percentage) as discount")

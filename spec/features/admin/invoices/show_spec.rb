@@ -88,4 +88,8 @@ describe "Admin Invoices Index Page" do
     expect(page).to have_content("Discounted Revenue: $#{invoice1.discounted_revenue}0")
     expect(page).to have_content("Discounted Revenue: $500.00")
   end
+
+  # Merchant1 aka Schroeder's invoices
+    # 29,137, 155, 346,418, 484, 490, 593 etc. 
+    #This is the check if the admin invoices actually show invoices with the discounts. 
 end
