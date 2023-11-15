@@ -99,7 +99,7 @@ RSpec.describe "Bulk Discounts Show" do
 
       visit merchant_bulk_discount_path(@merchant1.id, @discount1.id)
 
-      expect(page).to_not have_content("#{@merchant1.name}")
+      expect(page).to have_content("#{@merchant1.name}")
       expect(page).to have_content("#{@discount1.name}")
       expect(page).to_not have_button("Delete")
       expect(page).to have_content("Quantity Threshold: #{@discount1.quantity}")
