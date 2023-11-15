@@ -1,11 +1,14 @@
+<%= render partial: "shared/nav" %>
 <h1>Create a Discount</h1>
 
-<%= form_with url: "/merchants/#{@merchant.id}/bulk_discounts", method: :post, local: true, data: { turbo: false } do |f|  %>
-  <%= f.label :discount_name, "Name: " %>
-  <%= f.text_field :discount_name %>
-  <%= f.label :discount_quantity, "Quantity Threshold: " %>
-  <%= f.number_field :discount_quantity, in: 1..Float::INFINITY %>
-  <%= f.label :discount_percentage, "Percentage: " %>
-  <%= f.number_field :discount_percentage, in: 1..100 %>
-  <%= f.submit "Submit" %>
-<% end %>
+<div align="center">
+  <%= form_with url: "/merchants/#{@merchant.id}/bulk_discounts", method: :post, local: true, data: { turbo: false } do |f|  %>
+    <%= f.label :discount_name, "Name: " %>
+    <%= f.text_field :discount_name %>
+    <%= f.label :discount_quantity, "Quantity Threshold: " %>
+    <%= f.number_field :discount_quantity, in: 1..Float::INFINITY %>
+    <%= f.label :discount_percentage, "Percentage: " %>
+    <%= f.number_field :discount_percentage, in: 1..100 %>
+    <%= f.submit "Submit" %>
+  <% end %>
+</div>
